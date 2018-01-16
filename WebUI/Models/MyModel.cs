@@ -9,6 +9,7 @@
 
     /// <summary>
     /// https://odetocode.com/blogs/scott/archive/2013/03/11/dropdownlistfor-with-asp-net-mvc.aspx
+    /// Potential renaming: AirportExplorer / NoiseExplorer
     /// </summary>
     public class MyModel
     {

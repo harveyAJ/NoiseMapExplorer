@@ -27,8 +27,8 @@
 
 @section scripts {
     <script>
-        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
+        //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
 
         @*var legend = L.control({ position: 'topright' });
         legend.onAdd = function (mymap) {
@@ -41,19 +41,25 @@
         };
         legend.addTo(mymap);*@
 
-        $(document).ready(function () {
-            //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-            //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
+        //See: https://stackoverflow.com/questions/13062246/when-should-i-use-jquerys-document-ready-function
+        //when jquery code is placed at the bottom, there is no need for $(document).ready (that is because html is 
+        //interpreted from top to bottom and do all html are loaded when you get to the script section
+        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
 
-            $('#SelectedAirportId').on('change', function () {
-                var airportId = this.value;
-                //alert(this.value);
-                if (airportId == 1) { //LHR
-                    mymap.panTo(new L.LatLng(51.4700, -0.4543));
-                } else if (airportId == 2) { //LGW
-                    mymap.panTo(new L.LatLng(51.1537, -0.1821));
-                } else { //STN
-                    mymap.panTo(new L.LatLng(51.8860, 0.2389));
+        $('#SelectedAirportId').on('change', function () {
+            var airportId = this.value;
+
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: '@Url.Action("GetAirportReferencePoint", "Home")',
+                data: { 'airportId': airportId },
+                success: function(result) {
+                    mymap.panTo(new L.LatLng(result['Lat'], result['Long']))
+                },
+                error: function (result) {
+                    alert(result)
                 }
             });
         });
