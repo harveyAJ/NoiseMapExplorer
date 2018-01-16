@@ -22,39 +22,40 @@
 <div id="airportselect">
     @Html.LabelFor(m => m.SelectedAirportId)
     @Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)
-    <input type="submit" value="Submit" /> 
+    @*<input type="submit" value="Submit" />*@ 
 </div>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>
-    var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
+@section scripts {
+    <script>
+        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
 
-    @*var legend = L.control({ position: 'topright' });
-    legend.onAdd = function (mymap) {
-        var div = L.DomUtil.create('div', 'info legend');
-        //div.innerHTML = '<select><option>1</option><option>2</option><option>3</option></select>';
-        //div.innerHTML = $("#airportselect").val();
-        div.innerHTML = '@Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)';
-        div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
-        return div;
-    };
-    legend.addTo(mymap);*@
+        @*var legend = L.control({ position: 'topright' });
+        legend.onAdd = function (mymap) {
+            var div = L.DomUtil.create('div', 'info legend');
+            //div.innerHTML = '<select><option>1</option><option>2</option><option>3</option></select>';
+            //div.innerHTML = $("#airportselect").val();
+            div.innerHTML = '@Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)';
+            div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+            return div;
+        };
+        legend.addTo(mymap);*@
 
-    $(document).ready(function () {
-        //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-        //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
+        $(document).ready(function () {
+            //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+            //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
 
-        $('#SelectedAirportId').on('change', function () {
-            var airportId = this.value;
-            //alert(this.value);
-            if (airportId == 1) { //LHR
-                mymap.panTo(new L.LatLng(51.4700, -0.4543));
-            } else if (airportId == 2) { //LGW
-                mymap.panTo(new L.LatLng(51.1537, -0.1821));
-            } else { //STN
-                mymap.panTo(new L.LatLng(51.8860, 0.2389));
-            }
+            $('#SelectedAirportId').on('change', function () {
+                var airportId = this.value;
+                //alert(this.value);
+                if (airportId == 1) { //LHR
+                    mymap.panTo(new L.LatLng(51.4700, -0.4543));
+                } else if (airportId == 2) { //LGW
+                    mymap.panTo(new L.LatLng(51.1537, -0.1821));
+                } else { //STN
+                    mymap.panTo(new L.LatLng(51.8860, 0.2389));
+                }
+            });
         });
-    });
-</script>
+    </script>
+    }
