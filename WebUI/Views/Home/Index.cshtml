@@ -4,31 +4,41 @@
     ViewBag.Title = "Home Page";
 }
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+<!--<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
       integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
-      crossorigin="" />
+      crossorigin="" />-->
 <!-- Make sure you put this AFTER Leaflet's CSS -->
-<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+<!--<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
-        crossorigin=""></script>
+        crossorigin=""></script>-->
 
-<div id="mapid" 
-     style="width: 600px; height: 400px; 
-     position: relative;" 
-     class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" 
-     tabindex="0">
+    @*<div id="mapid" 
+         style="width: 100vw; height: 100vh; 
+         position: relative;" 
+         class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" 
+         tabindex="0">
+    </div>*@
+
+<div id="container">
+    <div id="mapid"
+            style="width: 700px; height: 500px; border:1px solid black;">
+
+    </div>
+
+    <div id="airportselect">
+        @Html.LabelFor(m => m.SelectedAirportId)
+        @Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)
+    </div>
 </div>
 
-<div id="airportselect">
-    @Html.LabelFor(m => m.SelectedAirportId)
-    @Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)
-    @*<input type="submit" value="Submit" />*@ 
-</div>
+@section Styles {
+    <link href="@Url.Content("~/Content/Home.css")" rel="stylesheet" type="text/css" />
+
+}
 
 @section scripts {
+    <script type="text/javascript" src="http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=60DD89AF175E5354E0530C6CA40A95EE"></script>
     <script>
-        //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-        //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
 
         @*var legend = L.control({ position: 'topright' });
         legend.onAdd = function (mymap) {
@@ -41,11 +51,30 @@
         };
         legend.addTo(mymap);*@
 
-        //See: https://stackoverflow.com/questions/13062246/when-should-i-use-jquerys-document-ready-function
-        //when jquery code is placed at the bottom, there is no need for $(document).ready (that is because html is 
-        //interpreted from top to bottom and do all html are loaded when you get to the script section
-        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mymap);
+        //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        //var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }); //.addTo(mymap);
+        //layer.addTo(mymap);
+        if ($('#container').is(':visible')) {
+            init();
+        }
+
+        var myosmap;
+        function init()
+        {
+            myosmap = new OpenSpace.Map('mapid');
+            myosmap.setCenter(new OpenSpace.MapPoint(400000, 400000), 1);
+        }
+
+        @*var dropdown = L.control({ position: 'topright' });
+
+        dropdown.onAdd = function (mymap) {
+            var div = L.DomUtil.create('div', 'dropdown');
+
+            div.innerHTML = '@Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)';
+            return div;
+        }
+
+        dropdown.addTo(mymap);*@
 
         $('#SelectedAirportId').on('change', function () {
             var airportId = this.value;
@@ -56,7 +85,8 @@
                 url: '@Url.Action("GetAirportReferencePoint", "Home")',
                 data: { 'airportId': airportId },
                 success: function(result) {
-                    mymap.panTo(new L.LatLng(result['Lat'], result['Long']))
+                    //mymap.panTo(new L.LatLng(result['Lat'], result['Long']))
+                    myosmap.setCenter(new OpenSpace.MapPoint(result['East'], result['North']), 7)
                 },
                 error: function (result) {
                     alert(result)

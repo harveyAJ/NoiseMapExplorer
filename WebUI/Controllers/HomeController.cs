@@ -49,7 +49,12 @@ namespace WebUI.Controllers
             if (airport == null)
                 return new JsonResult { Data = new { Error = "Could not find airport in database" } };
             return new JsonResult
-                { Data = new { Lat = airport.ReferencePointLatitude_deg, Long = airport.ReferencePointLongitude_deg } };
+                { Data = new {
+                    Lat = airport.ReferencePointLatitude_deg,
+                    Long = airport.ReferencePointLongitude_deg,
+                    East = airport.ReferencePointEastings_m,
+                    North = airport.ReferencePointNorthings_m
+                } };
         }
     }
 }

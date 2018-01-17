@@ -17,6 +17,22 @@ namespace WebUI.Entities
 
         public double ReferencePointLongitude_deg { get; set; }
 
+        /// <summary>
+        /// National Grid Eastings in meters [m]
+        /// </summary>
+        /// <remarks>
+        /// Only valid for UK airports
+        /// </remarks>
+        public double? ReferencePointEastings_m { get; set; }
+
+        /// <summary>
+        /// National Grid Northings in meters [m]
+        /// </summary>
+        /// <remarks>
+        /// Only valid for UK airports
+        /// </remarks>
+        public double? ReferencePointNorthings_m { get; set; }
+
         public ICollection<NoiseMap> NoiseMaps { get; set; }
     }
 }

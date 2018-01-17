@@ -18,11 +18,35 @@ namespace WebUI.DataAccess.Mock
             switch (id)
             {
                 case 1:
-                    return new Airport { Id = 1, IataCode = "LHR", ReferencePointLatitude_deg = 51.4700d, ReferencePointLongitude_deg = -0.4543d }; //"lazy" loading
+                    return new Airport
+                    {
+                        Id = 1,
+                        IataCode = "LHR",
+                        ReferencePointLatitude_deg = 51.4700d,
+                        ReferencePointLongitude_deg = -0.4543d,
+                        ReferencePointEastings_m = 507457.174d,
+                        ReferencePointNorthings_m = 175691.818d
+                    }; //"lazy" loading
                 case 2:
-                    return new Airport { Id = 2, IataCode = "LGW", ReferencePointLatitude_deg = 51.1537d, ReferencePointLongitude_deg = -0.1821d }; //"lazy" loading
+                    return new Airport
+                    {
+                        Id = 2,
+                        IataCode = "LGW",
+                        ReferencePointLatitude_deg = 51.1537d,
+                        ReferencePointLongitude_deg = -0.1821d,
+                        ReferencePointEastings_m = 527233.149d,
+                        ReferencePointNorthings_m = 140953.657d
+                    }; //"lazy" loading
                 case 3:
-                    return new Airport { Id = 3, IataCode = "STN", ReferencePointLatitude_deg = 51.8860d, ReferencePointLongitude_deg = 0.2389d }; //"lazy" loading
+                    return new Airport
+                    {
+                        Id = 3,
+                        IataCode = "STN",
+                        ReferencePointLatitude_deg = 51.8860d,
+                        ReferencePointLongitude_deg = 0.2389d,
+                        ReferencePointEastings_m = 554181.99d,
+                        ReferencePointNorthings_m = 223194.542d
+                    }; //"lazy" loading
                 default:
                     return null;
             }
