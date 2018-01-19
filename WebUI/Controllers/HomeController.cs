@@ -20,7 +20,7 @@ namespace WebUI.Controllers
 
         public ActionResult Index()
         {
-            return View(new MyModel());
+            return View(new MyModel(_repository.GetAllAirports()));
         }
 
         public ActionResult About()
@@ -37,15 +37,10 @@ namespace WebUI.Controllers
             return View();
         }
 
-        public JsonResult GetNoiseData(int airportId, int metricId)
-        {
-            return new JsonResult();
-        }
-
         [HttpPost]
         public JsonResult GetAirportReferencePoint(int airportId)
         {
-            var airport = _repository.GetByAirportId(airportId);
+            var airport = _repository.GetAirportById(airportId);
             if (airport == null)
                 return new JsonResult { Data = new { Error = "Could not find airport in database" } };
             return new JsonResult
@@ -56,5 +51,19 @@ namespace WebUI.Controllers
                     North = airport.ReferencePointNorthings_m
                 } };
         }
+
+        [HttpPost]
+        public JsonResult GetNoiseData(int airportId, int year/*, int metricId*/)
+        {
+            if (airportId == 1 && year == 2016)
+            {
+                return new JsonResult
+                {
+
+                };
+            }
+
+            return new JsonResult();
+        } 
     }
 }

@@ -11,9 +11,11 @@ namespace WebUI.DataAccess
 
     public interface IRepository
     {
-        Airport GetByAirportId(int id);
+        IEnumerable<Airport> GetAllAirports();
 
-        NoiseMap GetByAirportIdAndYear(int id, int year);
+        Airport GetAirportById(int id);
+
+        NoiseMap GetContoursByAirportIdAndYear(int id, int year);
 
 
     }

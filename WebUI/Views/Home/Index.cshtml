@@ -4,22 +4,29 @@
     ViewBag.Title = "Home Page";
 }
 
-<!--<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+@*<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
       integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
-      crossorigin="" />-->
+      crossorigin="" />*@
 <!-- Make sure you put this AFTER Leaflet's CSS -->
-<!--<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+@*<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
         integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
-        crossorigin=""></script>-->
-
-    @*<div id="mapid" 
-         style="width: 100vw; height: 100vh; 
-         position: relative;" 
-         class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" 
-         tabindex="0">
-    </div>*@
+        crossorigin=""></script>*@
 
 <div id="container">
+    <div id="airportselect">
+        @Html.LabelFor(m => m.SelectedAirportId)
+        @Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems, "Select an airport")
+        @Html.LabelFor(m => m.SelectedYear)
+        @Html.DropDownListFor(m => m.SelectedYear, Model.YearItems, "Select year")
+        <input id="getContours" type="button" value="Query"/>
+    </div>
+
+    <div id="mapid"
+         class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom">
+    </div>
+</div>
+
+@*<div id="container">
     <div id="mapid"
             style="width: 700px; height: 500px; border:1px solid black;">
 
@@ -29,69 +36,120 @@
         @Html.LabelFor(m => m.SelectedAirportId)
         @Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)
     </div>
-</div>
+</div>*@
 
 @section Styles {
     <link href="@Url.Content("~/Content/Home.css")" rel="stylesheet" type="text/css" />
-
+    @*<link href="@Url.Content("~/Content/leaflet.css")" rel="stylesheet" type="text/css" />*@
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+          integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+          crossorigin="" />
 }
 
 @section scripts {
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+            integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+            crossorigin=""></script>
     <script type="text/javascript" src="https://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=60DD89AF175E5354E0530C6CA40A95EE"></script>
+    <script src="https://rawgit.com/kartena/Proj4Leaflet/master/lib/proj4-compressed.js"></script>
+    <script src="https://rawgit.com/kartena/Proj4Leaflet/master/src/proj4leaflet.js"></script>
+    <script src="https://rawgit.com/rob-murray/os-leaflet/master/OSOpenSpace.js"></script>
     <script>
-
-        @*var legend = L.control({ position: 'topright' });
-        legend.onAdd = function (mymap) {
-            var div = L.DomUtil.create('div', 'info legend');
-            //div.innerHTML = '<select><option>1</option><option>2</option><option>3</option></select>';
-            //div.innerHTML = $("#airportselect").val();
-            div.innerHTML = '@Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)';
-            div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
-            return div;
-        };
-        legend.addTo(mymap);*@
-
-        //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-        //var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }); //.addTo(mymap);
-        //layer.addTo(mymap);
         if ($('#container').is(':visible')) {
             init();
         }
 
-        var myosmap;
-        function init()
-        {
-            myosmap = new OpenSpace.Map('mapid');
-            myosmap.setCenter(new OpenSpace.MapPoint(400000, 400000), 1);
+        //The following is the OS stuff integrated into leaflet
+        var mymap;
+        var OSHQ = {
+            WGS84: [50.936715, -1.4701989],
+            OSGB: [437324, 115386]
+        };
+        function init() {
+            var popup = L.popup(),
+              openspaceLayer;
+
+            /* L.Map with OS options */
+            mymap = new L.Map('mapid', {
+                zoom: 6,
+                crs: L.OSOpenSpace.CRS,
+                attributionControl: true
+            });
+
+            /* New L.TileLayer.OSOpenSpace with API Key */
+            openspaceLayer = L.OSOpenSpace.tilelayer('60DD89AF175E5354E0530C6CA40A95EE');
+
+            mymap.addLayer(openspaceLayer);
+            mymap.setView([50.936715, -1.4701989], 1);
+
+            /* add some ui to the map */
+            L.control.scale({ position: 'bottomright' }).addTo(mymap);
+
+            //L.marker(OSHQ.WGS84).addTo(map)
+            //  .bindPopup('<b>Hello world!</b><br />I am at OSHQ.').openPopup();
         }
 
-        @*var dropdown = L.control({ position: 'topright' });
+        //The following is the regular leaflet stuff
+        //var mymap;
+        //function init()
+        //{
+        //    mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        //    var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }); //.addTo(mymap);
+        //    layer.addTo(mymap);
+        //}
 
-        dropdown.onAdd = function (mymap) {
-            var div = L.DomUtil.create('div', 'dropdown');
+        //The following is openspace ordnancesurvey
 
-            div.innerHTML = '@Html.DropDownListFor(m => m.SelectedAirportId, Model.AirportItems)';
-            return div;
-        }
+        //var myosmap;
+        //function init()
+        //{
+        //    myosmap = new OpenSpace.Map('mapid');
+        //    myosmap.setCenter(new OpenSpace.MapPoint(400000, 400000), 1);
+        //}
 
-        dropdown.addTo(mymap);*@
+        //var lonlat;
+        //var gridProjection = new OpenSpace.GridProjection();
+
+        var airportId; //id of the selected airport
+        var year; //selected year
 
         $('#SelectedAirportId').on('change', function () {
-            var airportId = this.value;
+            airportId = this.value;
 
             $.ajax({
                 method: "POST",
                 dataType: "json",
                 url: '@Url.Action("GetAirportReferencePoint", "Home")',
                 data: { 'airportId': airportId },
-                success: function(result) {
-                    //mymap.panTo(new L.LatLng(result['Lat'], result['Long']))
-                    myosmap.setCenter(new OpenSpace.MapPoint(result['East'], result['North']), 7)
+                success: function (result) {
+                    //mymap.panTo(new L.LatLng(result['Lat'], result['Long'])); //classical leaflet
+                    mymap.setView(new L.LatLng(result['Lat'], result['Long']), 7);
+                    //lonlat = new OpenLayers.LonLat(result['Long'], result['Lat']); //OpenSpace OS
+                    ////myosmap.setCenter(new OpenSpace.MapPoint(result['East'], result['North']), 7)
+                    //myosmap.setCenter(gridProjection.getMapPointFromLonLat(lonlat), 7)
                 },
                 error: function (result) {
                     alert(result)
                 }
             });
         });
-    </script>
+
+        $('#SelectedYear').on('change', function () {
+            year = this.value;
+            //alert(year);
+        });
+
+        $('#getContours').onclick = function () {
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                data: { 'airportId': airportId, 'year': year },
+                url: '@Url.Action("GetNoiseData", "Home")',
+                success: function (response) {
+                    L.geoJSON(response).addTo(mymap);
+                }
+            });
+        }
+
+</script>
     }

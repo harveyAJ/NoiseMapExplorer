@@ -18,7 +18,7 @@ namespace WebUI.Entities
         public double ReferencePointLongitude_deg { get; set; }
 
         /// <summary>
-        /// National Grid Eastings in meters [m]
+        /// National Grid Eastings in meters [m] OSGB36
         /// </summary>
         /// <remarks>
         /// Only valid for UK airports
@@ -26,7 +26,7 @@ namespace WebUI.Entities
         public double? ReferencePointEastings_m { get; set; }
 
         /// <summary>
-        /// National Grid Northings in meters [m]
+        /// National Grid Northings in meters [m] OSGB36
         /// </summary>
         /// <remarks>
         /// Only valid for UK airports

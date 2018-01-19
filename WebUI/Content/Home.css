@@ -1,9 +1,9 @@
 ﻿
-/*#mapid {
+#mapid {
     width: 1000px; 
     height: 800px; 
-    position: absolute;
-}*/
+    position: relative;
+}
 
 #airportselect {
     /*position: relative;
